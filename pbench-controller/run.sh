@@ -79,7 +79,13 @@ elif [[ $JOB == "http" ]]; then
 	cd /root/http-ci-tests
 	source /opt/pbench-agent/profile; . ./http-test.sh all
 elif [[ $JOB == "mongo" ]]; then
-	source /opt/pbench-agent/profile;
+	if [[ -d "/root/mongo-scale-test" ]]; then
+		rm -rf /root/mongo-scale-test
+	fi
+	git clone https://github.com/openshift/svt.git /root/mongo-scale-test
+	cd /root/mongo-scale-test/storage/mongodb
+	source /opt/pbench-agent/profile
+	./runmongo.sh $MEMORY_LIMIT $YCSB_THREADS $JUMP_HOST $WORKLOAD $ITERATION $RECORDCOUNT $OPERATIONCOUNT $STORAGECLASS $VOLUMESIZE $DISTRIBUTION $PROJECTS
 elif [[ $JOB == "test" ]]; then
 	echo "sleeping forever"
 	source /opt/pbench-agent/profile; sleep infinity
